@@ -18,7 +18,7 @@ mysql = MySQL(cursorclass=DictCursor)
 mysql.init_app(app)
 
 @app.route('/')
-def main():  
+def main():
     return render_template('index.html')
 
 @app.context_processor
@@ -46,7 +46,7 @@ def join_post():
     cursor = conn.cursor()
 
     # DB에 이미 이 ID가 있는지 확인
-    cursor.execute('SELECT user_id FROM user WHERE user_id = %s;', [user_id])
+    cursor.execute('SELECT user_id FROM users WHERE user_id = %s;', [user_id])
     row = cursor.fetchone()
 
     print(row)
@@ -58,7 +58,7 @@ def join_post():
 
     # 없으면 DB에 사용자 추가
     # pk, user_id, user_name, user_pw
-    cursor.execute('INSERT INTO user VALUES (NULL, %s, %s, %s)', [user_id, user_name, user_pw])
+    cursor.execute('INSERT INTO users VALUES (NULL, %s, %s, %s)', [user_id, user_name, user_pw])
 
     # 변경사항 저장 (transaction commit)
     conn.commit()
@@ -86,7 +86,7 @@ def login_post():
     cursor = conn.cursor()
 
     # DB에 회원 정보가 있는지 확인
-    cursor.execute('SELECT * FROM user WHERE user_id = %s AND user_pw = %s;', [user_id, user_pw])
+    cursor.execute('SELECT * FROM users WHERE user_id = %s AND user_pw = %s;', [user_id, user_pw])
     row = cursor.fetchone()
 
     # if row is None or row['user_pw'] != user_pw:
@@ -120,7 +120,7 @@ def guestbook():
     data_list = cursor.fetchall()
 
     # data_list라는 이름으로 html에 값을 넘겨서 guest.html 파일을 불러온다.
-    return render_template('guest.html', data_list=data_list)
+    return render_template('guest_book.html', data_list=data_list)
 
 # /guestbook 주소로 POST 요청이 왔을 경우 실행되는 함수
 # => 방명록 페이지에서 폼 전송을 했을 때 실행이 됨

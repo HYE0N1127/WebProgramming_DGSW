@@ -17,14 +17,14 @@
 				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
 					<span class="navbar-toggler-icon"></span>
 				</button>
-			
+
 				<div class="collapse navbar-collapse" id="navbar">
 					<ul class="navbar-nav mr-auto">
 						<li class="nav-item">
 							<a class="nav-link" href="/">HOME</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="/guestbook">방명록</a>
+							<a class="nav-link active" href="/guestbook">방명록</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link" href="/join">회원가입</a>
@@ -35,9 +35,11 @@
 						<li class="nav-item">
 							<a class="nav-link active">{{ user_name }}</a>
 						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/">로그아웃</a>
-						</li>
+						<form class="form-logout" method="POST" action="/logout">
+							<li class="nav-item">
+								<a class="nav-link" name="user_logout" href="/logout">로그아웃</a>
+							</li>
+						</form>
 {% else %}
 						<li class="nav-item">
 							<a class="nav-link" href="/login">로그인</a>
@@ -47,18 +49,42 @@
 				</div>
 			</div>
 		</nav>
-		<div class="text-center">
-			<h3>로그인</h3>
-			<form class="form-signin" method="POST" action="/login">
-				<input type="text" name="user_id" class="form-control" placeholder="ID" required autofocus>
-				<input type="password" name="user_pw" class="form-control" placeholder="비밀번호" required>
-{% if error %}
-				<!-- 오류 메시지는 실제로 오류가 있을때만 표시되게 해주세요. -->
-				<p class="error">ID, 비밀번호가 올바르지 않습니다.</p>
-{% endif %}
-				<button class="btn btn-lg btn-primary btn-block" type="submit">로그인</button>
+		<main class="container">
+			<h2>방명록 작성</h2>
+			<hr>
+{% if user_name %}
+      <form method="POST" action="/guestbook">
+				<div class="form-group">
+					이름: {{ user_name }}
+				</div>
+				<div class="form-group">
+					<label for="guest-content" class="form-label">내용</label>
+					<textarea class="form-control" id="guest-content" rows="3" name="content"></textarea>
+				</div>
+				<button type="submit" class="btn btn-primary btn-block">작성</button>
 			</form>
-			<div class="sign-up"><a href="/join" class="sign-up">회원 가입하기</a></div>
-		</div>
+			<hr>
+			<!-- ------------- -->
+{% for data_list in data_list %}
+			<div class="message-container">
+				<div class="message">
+					<span class="message-time">{{ data_list.inserted_at }}</span><br/>
+{%  if data_list.author == session['user_name'] %}
+                    <form action="/delete" method="post">
+                        <div style="display: none">
+                            <input type="text" name="pk" value={{ data_list.pk }}>
+                        </div>
+                    </form>
+{% endif %}
+					<h5>{{ data_list.author }}</h5>
+					<p>{{ data_list.content }}</p>
+        </div>
+			</div>
+{% endfor %}
+{% else %}
+			방명록은 로그인 후 작성할 수 있습니다.
+			<hr>
+{% endif %}
+		</main>
 	</body>
 </html>
